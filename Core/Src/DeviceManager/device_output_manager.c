@@ -48,12 +48,13 @@ static uint32_t 	task_id[NUM_DEVICE];
 static bool			timeout[NUM_DEVICE] = {0};
 static uint8_t 		counter[NUM_DEVICE] = {0};
 
-static uint8_t DEVICE_state[NUM_DEVICE] = {PUMP_WAIT_FOR_CHANGE_CONDITION};
+static int DEVICE_state[NUM_DEVICE] = {PUMP_WAIT_FOR_CHANGE_CONDITION};
 
 
 static void PUMP_get_humi_value();
 static void PUMP_timeout();
 static void PUMP_run();
+static void CONTROL_pump();
 
 static void device_under_remote_control(uint8_t device);
 
@@ -63,7 +64,7 @@ static void (*func_ptr[NUM_DEVICE])() = {
 };
 static void publish_state(){
 	char buff[60];
-	int size = sprintf(buff,"LED STATE =%d - %.2f\n" ,DEVICE_state[PUMP],value_condition[LUX]);
+	int size = sprintf(buff,"PUMP STATE =%d - %.2f\n" ,DEVICE_state[PUMP],value_condition[SOIL_HUMI]);
 	UART_send(UART_3, buff, size);
 }
 void DEVICE_MANAGER_init(){
@@ -83,7 +84,7 @@ void DEVICE_MANAGER_init(){
 	threshold[FLOOR_LEVEL][SOIL_HUMI] = 80;
 	threshold[FLOOR_LEVEL][SOIL_TEMP] = 23;
 
-//	SCH_Add_Task(publish_state, 500, 1000);
+	SCH_Add_Task(publish_state, 500, 1000);
 
 // INIT GPIO
 	int nb_io = sizeof(gpio_table)/sizeof(GPIO_info_t);
@@ -94,7 +95,7 @@ void DEVICE_MANAGER_init(){
 }
 
 void DEVICE_MANAGER_run(){
-
+	CONTROL_pump();
 	PUMP_run();
 
 }
@@ -136,6 +137,9 @@ void DEVICE_MANAGER_set_value_condition(uint8_t condition, float value){
 }
 
 void DEVICE_MANAGER_clear_under_remote_control(uint8_t device){
+	if(DEVICE_state[device] != DEVICE_UNDER_REMOTE_CONTROL){
+		return;
+	}
 	switch (device) {
 			case PUMP:
 				HAL_GPIO_WritePin(gpio_table[PUMP_PIN].port, gpio_table[PUMP_PIN].init_info.Pin, OFF);
@@ -161,6 +165,34 @@ void DEVICE_MANAGER_under_remote_control(uint8_t device, uint8_t value){
 
 
 // ------------------------------------------------------------------------------------- //
+static uint8_t pre_state = 0;
+
+static void CONTROL_pump(){
+	if(DEVICE_state[PUMP] == DEVICE_UNDER_REMOTE_CONTROL){
+		return;
+	}
+	if(flag_condition[LUX] && flag_condition[SOIL_TEMP]){
+		flag_condition[LUX] = false;
+		flag_condition[SOIL_TEMP] = false;
+		if((value_condition[LUX] >= 1500 || value_condition[LUX] <= 150) ||
+				(value_condition[SOIL_TEMP] >= 37 || value_condition[SOIL_TEMP] <= 20)){
+
+			if(DEVICE_state[PUMP] != -1){
+				DEVICE_state[PUMP] = -1;
+				HAL_GPIO_WritePin(gpio_table[PUMP_PIN].port, gpio_table[PUMP_PIN].init_info.Pin, OFF);
+				SENSOR_MANAGER_clear_setup_state(SOIL_HT_SENSOR);
+
+			}
+		}else{
+			if(DEVICE_state[PUMP] == -1){
+				DEVICE_state[PUMP] = 0;
+				HAL_GPIO_WritePin(gpio_table[PUMP_PIN].port, gpio_table[PUMP_PIN].init_info.Pin, OFF);
+				SENSOR_MANAGER_clear_setup_state(SOIL_HT_SENSOR);
+			}
+		}
+	}
+
+}
 static void PUMP_run(){
 	switch (DEVICE_state[PUMP]) {
 		case PUMP_WAIT_FOR_CHANGE_CONDITION:
@@ -181,7 +213,7 @@ static void PUMP_run(){
 			if(flag_condition[SOIL_HUMI]){
 				flag_condition[SOIL_HUMI] = false;
 				if(value_condition[SOIL_HUMI] <= setpoint[SOIL_HUMI]){
-					task_id[PUMP] = SCH_Add_Task(func_ptr[PUMP], READ_HUMI_SENSOR_DURATION, 0);
+
 
 				}else if((value_condition[SOIL_HUMI] >= threshold[CEILING_LEVEL][SOIL_HUMI])){
 
@@ -189,8 +221,6 @@ static void PUMP_run(){
 
 					HAL_GPIO_WritePin(gpio_table[PUMP_PIN].port, gpio_table[PUMP_PIN].init_info.Pin, OFF);
 					DEVICE_state[PUMP] = PUMP_WAIT_FOR_CHANGE_CONDITION;
-				}else{
-					task_id[PUMP] = SCH_Add_Task(func_ptr[PUMP], READ_HUMI_SENSOR_DURATION, 0);
 				}
 			}
 			break;

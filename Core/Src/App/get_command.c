@@ -43,11 +43,11 @@ static command_info table_command_condition[] = {
 				.name = LUX
 		},
 		[1] = {
-				.sign = 'S',
+				.sign = 'T',
 				.name = SOIL_TEMP
 		},
 		[2] = {
-				.sign = 'T',
+				.sign = 'H',
 				.name = SOIL_HUMI
 		},
 };
@@ -101,7 +101,7 @@ void SERIAL_get_command_run(){
 		case CONSTRUE_COMMAND:;
 			switch (buffer[1]) {
 				case 'D':
-					for(i = 0; i <= 4; ++i){
+					for(i = 0; i <= 0; ++i){
 						if(buffer[2] == table_command_device[i].sign){
 							if(buffer[3] == 'X'){
 								DEVICE_MANAGER_clear_under_remote_control(table_command_device[i].name);
@@ -122,7 +122,7 @@ void SERIAL_get_command_run(){
 					break;
 				case 'S':
 
-					for(i = 0; i <= 5; ++i){
+					for(i = 0; i <= 2; ++i){
 						if(buffer[2] == table_command_condition[i].sign){
 							value = utils_string_to_int(&buffer[3], length - 4);
 							DEVICE_MANAGER_change_setpoint(table_command_condition[i].name, value);

@@ -100,7 +100,6 @@ int main(void)
   float temp=0,humi =0;
 
 
-
   while (1)
 
   {
