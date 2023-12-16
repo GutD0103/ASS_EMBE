@@ -98,7 +98,9 @@ int main(void)
   float value = 0;
   int size;
   float temp=0,humi =0;
-
+//  SHT30_Heater_Set_Enable(&sht, 1);
+//  HAL_Delay(50000);
+  SHT30_Heater_Set_Enable(&sht, 0);
 
   while (1)
 

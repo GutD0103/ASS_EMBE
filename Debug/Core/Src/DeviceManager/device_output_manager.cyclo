@@ -9,8 +9,8 @@ device_output_manager.c:139:6:DEVICE_MANAGER_clear_under_remote_control	3
 device_output_manager.c:152:6:DEVICE_MANAGER_under_remote_control	2
 device_output_manager.c:170:13:CONTROL_pump	10
 device_output_manager.c:196:13:PUMP_run	12
-device_output_manager.c:235:13:device_under_remote_control	2
-device_output_manager.c:245:14:cc_mean	2
-device_output_manager.c:254:13:PUMP_set_flag_con	1
-device_output_manager.c:257:13:PUMP_get_humi_value	2
-device_output_manager.c:271:13:PUMP_timeout	1
+device_output_manager.c:234:13:device_under_remote_control	2
+device_output_manager.c:244:14:cc_mean	2
+device_output_manager.c:253:13:PUMP_set_flag_con	1
+device_output_manager.c:256:13:PUMP_get_humi_value	2
+device_output_manager.c:270:13:PUMP_timeout	1

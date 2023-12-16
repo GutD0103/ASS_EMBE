@@ -84,7 +84,7 @@ void DEVICE_MANAGER_init(){
 	threshold[FLOOR_LEVEL][SOIL_HUMI] = 80;
 	threshold[FLOOR_LEVEL][SOIL_TEMP] = 23;
 
-	SCH_Add_Task(publish_state, 500, 1000);
+//	SCH_Add_Task(publish_state, 500, 1000);
 
 // INIT GPIO
 	int nb_io = sizeof(gpio_table)/sizeof(GPIO_info_t);
@@ -175,7 +175,7 @@ static void CONTROL_pump(){
 		flag_condition[LUX] = false;
 		flag_condition[SOIL_TEMP] = false;
 		if((value_condition[LUX] >= 1500 || value_condition[LUX] <= 150) ||
-				(value_condition[SOIL_TEMP] >= 37 || value_condition[SOIL_TEMP] <= 20)){
+				(value_condition[SOIL_TEMP] >= 40 || value_condition[SOIL_TEMP] <= 20)){
 
 			if(DEVICE_state[PUMP] != -1){
 				DEVICE_state[PUMP] = -1;
@@ -215,10 +215,9 @@ static void PUMP_run(){
 				if(value_condition[SOIL_HUMI] <= setpoint[SOIL_HUMI]){
 
 
-				}else if((value_condition[SOIL_HUMI] >= threshold[CEILING_LEVEL][SOIL_HUMI])){
+				}else if((value_condition[SOIL_HUMI] > setpoint[SOIL_HUMI])){
 
 					SENSOR_MANAGER_clear_setup_state(SOIL_HT_SENSOR);
-
 					HAL_GPIO_WritePin(gpio_table[PUMP_PIN].port, gpio_table[PUMP_PIN].init_info.Pin, OFF);
 					DEVICE_state[PUMP] = PUMP_WAIT_FOR_CHANGE_CONDITION;
 				}

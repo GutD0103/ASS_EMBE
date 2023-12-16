@@ -9,8 +9,8 @@
 ../Core/Src/DeviceManager/device_output_manager.c:152:6:DEVICE_MANAGER_under_remote_control	16	static
 ../Core/Src/DeviceManager/device_output_manager.c:170:13:CONTROL_pump	8	static
 ../Core/Src/DeviceManager/device_output_manager.c:196:13:PUMP_run	8	static
-../Core/Src/DeviceManager/device_output_manager.c:235:13:device_under_remote_control	16	static
-../Core/Src/DeviceManager/device_output_manager.c:245:14:cc_mean	24	static
-../Core/Src/DeviceManager/device_output_manager.c:254:13:PUMP_set_flag_con	8	static
-../Core/Src/DeviceManager/device_output_manager.c:257:13:PUMP_get_humi_value	8	static
-../Core/Src/DeviceManager/device_output_manager.c:271:13:PUMP_timeout	8	static
+../Core/Src/DeviceManager/device_output_manager.c:234:13:device_under_remote_control	16	static
+../Core/Src/DeviceManager/device_output_manager.c:244:14:cc_mean	24	static
+../Core/Src/DeviceManager/device_output_manager.c:253:13:PUMP_set_flag_con	8	static
+../Core/Src/DeviceManager/device_output_manager.c:256:13:PUMP_get_humi_value	8	static
+../Core/Src/DeviceManager/device_output_manager.c:270:13:PUMP_timeout	8	static
